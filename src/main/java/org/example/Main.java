@@ -1,7 +1,35 @@
 package org.example;
 
-public class Main {
-    public static void main(String[] args) {
+import org.example.network.Client;
+import org.example.network.PeerConnection;
+import org.example.network.Server;
 
+import javax.swing.*;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        // Parse args : java Main [host] [port] [delay|rollback]
+        boolean isServer = args.length == 0 || args[0].equals("server");
+        String host = isServer ? null : args[0];
+        int port = args.length > 1 ? Integer.parseInt(args[1]) : 7777;
+        boolean netcodeType = args.length > 2 && args[2].equals("rollback"); // true for rollback, false for delay
+
+        // Connecting
+        PeerConnection peer = isServer ? Server.listen(port) : Client.connect(host, port);
+
+        // UI
+        GUI gui = new GUI();
+        InputHandler input = new InputHandler();
+
+        JFrame frame = new JFrame("Game");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(gui);
+        frame.pack();
+        frame.addKeyListener(input);
+        frame.setVisible(true);
+
+        // Run
+        System.out.println("Using " + (netcodeType ? "rollback" : "delay-based") + " netcode");
+        new Game(peer, netcodeType, input, gui).run();
     }
 }

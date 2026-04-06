@@ -1,6 +1,6 @@
 package org.example.netcode;
 
-// Both players buffer their inputs for a set ammount of frames before applying them,
+// Both players buffer their inputs for a set amount of frames before applying them,
 // guaranteeing that when frame N is simulated both player inputs for frame N are already available
 
 import org.example.GameState;
