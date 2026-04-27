@@ -14,7 +14,7 @@ public class RollbackNetcode implements Netcode{
 
     public RollbackNetcode(PeerConnection peer) {
         this.peer = peer;
-        this.current = new GameState();
+        this.current = GameState.createInitial();
     }
 
     @Override

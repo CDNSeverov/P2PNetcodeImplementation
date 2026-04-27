@@ -2,28 +2,29 @@ package org.example.network;
 
 import org.example.Message;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class PeerConnection {
     private final Socket socket;
-    private final ObjectOutputStream out;
+    private final DataOutputStream out;
     private final ConcurrentLinkedQueue<Message> inbox = new ConcurrentLinkedQueue<>();
 
     public PeerConnection(Socket socket) throws IOException {
         this.socket = socket;
-        this.out = new ObjectOutputStream(socket.getOutputStream());
+        this.out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 
         Thread reader = new Thread(() -> {
-            ObjectInputStream in = null;
+            DataInputStream in = null;
             try {
-                in = new ObjectInputStream(socket.getInputStream());
+                in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
                 while(!socket.isClosed()) {
-                    Message msg = (Message) in.readObject();
-                    inbox.add(msg);
+                    int frame = in.readInt();
+                    int left = in.readInt();
+                    int right = in.readInt();
+                    int attack = in.readInt();
+                    inbox.add(new Message(frame, new int[]{left, right, attack}));
                 }
             } catch (Exception e) {
                 System.out.println("Connection closed: " + e.getMessage());
@@ -36,9 +37,11 @@ public class PeerConnection {
 
     public void send(Message msg) {
         try {
-            out.writeObject(msg);
+            out.writeInt(msg.frame);
+            out.writeInt(msg.inputs[0]);
+            out.writeInt(msg.inputs[1]);
+            out.writeInt(msg.inputs[2]);
             out.flush();
-            out.reset();
         } catch (IOException e) {
             System.out.println("Send error: " + e.getMessage());
         }

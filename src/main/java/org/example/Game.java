@@ -30,7 +30,7 @@ public class Game {
             while (accumulator >= TICK_RATE) {
                 int[] localInputs = input.readLocalInputs();
                 netcode.tick(localInputs);
-                accumulator -=TICK_RATE;
+                accumulator -= TICK_RATE;
             }
 
             gui.updateState(netcode.getDisplayState());

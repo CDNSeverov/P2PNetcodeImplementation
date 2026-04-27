@@ -19,7 +19,7 @@ public class DelayBasedNetcode implements Netcode{
     private final Deque<int[]> remoteBuffer = new ArrayDeque<>();
 
     public DelayBasedNetcode(PeerConnection peer) {
-        this.state = new GameState();
+        this.state = GameState.createInitial();
         this.peer = peer;
     }
 

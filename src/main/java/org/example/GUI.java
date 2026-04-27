@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GUI extends JPanel {
-    private GameState state;
+    private volatile GameState state;
 
     public GUI() {
         setPreferredSize(new Dimension(1280,720));
@@ -13,20 +13,21 @@ public class GUI extends JPanel {
 
     public void updateState(GameState state) {
         this.state = state;
-        repaint();
+        SwingUtilities.invokeLater(this::repaint);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (state == null) {
+        GameState snapshot = state;
+        if (snapshot == null) {
             return;
         }
 
-        drawPlayer(g, state.player, Color.WHITE);
-        drawPlayer(g, state.opponent, Color.RED);
+        drawPlayer(g, snapshot.player, Color.WHITE);
+        drawPlayer(g, snapshot.opponent, Color.RED);
 
-        if (state.gameOver) {
+        if (snapshot.gameOver) {
             g.setColor(Color.YELLOW);
             g.setFont(new Font("Arial", Font.BOLD, 64));
             g.drawString("GAME OVER!", 450, 360);
@@ -34,6 +35,10 @@ public class GUI extends JPanel {
     }
 
     private void drawPlayer(Graphics g, Player p, Color color) {
+        if (p == null) {
+            return;
+        }
+
         g.setColor(color);
         // Body with origin as center
         int bx = (int)(p.posX - Player.WIDTH / 2f);

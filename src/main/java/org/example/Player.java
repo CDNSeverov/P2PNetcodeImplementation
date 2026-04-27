@@ -1,20 +1,21 @@
 package org.example;
 
 public class Player {
-    float posX;
-    float posY;
+    public float posX;
+    public float posY;
     public Attack attack;
     public boolean facingRight;
 
     public static final float WIDTH = 100f;
     public static final float HEIGHT = 100f;
     public static final float ATTACK_W = 100f;
-    public static final float ATTACK_H = 100f;
+    public static final float ATTACK_H = 10f;
 
     public Player(float posX, float posY, boolean facingRight) {
+        //System.out.println("Player Created");
         this.posX = posX;
         this.posY = posY;
-        this.attack = attack;
+        this.attack = new Attack(posX, posY);
         this.facingRight = facingRight;
     }
 
@@ -22,10 +23,10 @@ public class Player {
         if (inputs[0] == 1 && posX >= 50f) {
             posX -= 10f;
         }
-        if (inputs[1] == 1 && posX >= 1230f) {
+        if (inputs[1] == 1 && posX <= 1230f) {
             posX += 10f;
         }
-        if (inputs[3] == 1 && attack.counter <= 0) {
+        if (inputs[2] == 1 && attack.counter <= 0) {
             attack.counter = 60;
         }
 
@@ -55,10 +56,10 @@ public class Player {
         return posX + WIDTH/2f;
     }
     public float top() {
-        return posX - HEIGHT/2f;
+        return posY - HEIGHT/2f;
     }
     public float bottom() {
-        return posX + HEIGHT/2f;
+        return posY + HEIGHT/2f;
     }
 
     public float attackLeft() {
@@ -68,9 +69,9 @@ public class Player {
         return attack.posX + ATTACK_W;
     }
     public float attackTop() {
-        return attack.posX - ATTACK_H/2f;
+        return attack.posY - ATTACK_H/2f;
     }
     public float attackBottom() {
-        return attack.posX + ATTACK_H/2f;
+        return attack.posY + ATTACK_H/2f;
     }
 }

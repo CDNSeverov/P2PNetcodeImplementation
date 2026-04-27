@@ -6,12 +6,23 @@ public class GameState {
     public boolean gameOver;
     public int frame;
 
-    public GameState() {
-        this.player = player;
-        this.opponent = opponent;
-        gameOver = false;
-        frame = 0;
+    public static GameState createInitial() {
+        GameState gs = new GameState();
+        gs.player = new Player(80f, 410f, true);
+        gs.opponent = new Player(900f, 410f, false);
+        gs.gameOver = false;
+        gs.frame = 0;
+        return gs;
     }
+
+    private GameState() {}
+
+//    public GameState() {
+//        this.player = player;
+//        this.opponent = opponent;
+//        gameOver = false;
+//        frame = 0;
+//    }
 
     private GameState(Player player, Player opponent, boolean gameOver, int frame) {
         this.player = player;
@@ -34,7 +45,7 @@ public class GameState {
                 player.posX -= 10f;
             }
             if (opponent.posX <= 1230f) {
-                player.posX += 10f;
+                opponent.posX += 10f;
             }
         }
         if (player.attack.isExtended() && aabb(player.left(), player.top(), player.right(), player.bottom(), opponent.left(), opponent.top(), opponent.right(), opponent.bottom())) {
