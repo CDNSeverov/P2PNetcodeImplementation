@@ -7,13 +7,9 @@
     <list default="true" id="c1b25e2c-1877-4290-8891-7cb2e02bb56c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/GUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/GUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Game.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/GameState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/GameState.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Player.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/netcode/DelayBasedNetcode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/netcode/DelayBasedNetcode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/netcode/RollbackNetcode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/netcode/RollbackNetcode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/network/PeerConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/network/PeerConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/network/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/network/Server.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,7 +98,7 @@
       <workItem from="1776687786981" duration="687000" />
       <workItem from="1776690008402" duration="733000" />
       <workItem from="1776714405018" duration="1353000" />
-      <workItem from="1777276320587" duration="625000" />
+      <workItem from="1777276320587" duration="3740000" />
     </task>
     <servers />
   </component>

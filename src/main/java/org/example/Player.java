@@ -31,9 +31,9 @@ public class Player {
         }
 
         if (attack.isExtended()) {
-            attack.posX = facingRight ? posX + 50f : posX - 50f;
+            attack.posX = facingRight ? posX + 50f : posX - 50f - ATTACK_W;
         } else {
-            attack.posX = facingRight ? posX - 50f : posX + 50f;
+            attack.posX = facingRight ? posX - 50f - ATTACK_W : posX + 50f;
         }
         attack.posY = 450f;
 
@@ -62,16 +62,8 @@ public class Player {
         return posY + HEIGHT/2f;
     }
 
-    public float attackLeft() {
-        return attack.posX;
-    }
-    public float attackRight() {
-        return attack.posX + ATTACK_W;
-    }
-    public float attackTop() {
-        return attack.posY - ATTACK_H/2f;
-    }
-    public float attackBottom() {
-        return attack.posY + ATTACK_H/2f;
-    }
+    public float attackLeft()   { return attack.posX; }
+    public float attackRight()  { return attack.posX + ATTACK_W; }
+    public float attackTop()    { return attack.posY - ATTACK_H / 2f; }
+    public float attackBottom() { return attack.posY + ATTACK_H / 2f; }
 }

@@ -8,8 +8,8 @@ public class GameState {
 
     public static GameState createInitial() {
         GameState gs = new GameState();
-        gs.player = new Player(80f, 410f, true);
-        gs.opponent = new Player(900f, 410f, false);
+        gs.player = new Player(130f, 410f, true);
+        gs.opponent = new Player(1150f, 410f, false);
         gs.gameOver = false;
         gs.frame = 0;
         return gs;
@@ -32,7 +32,10 @@ public class GameState {
     }
 
     public void update(int[] localInputs, int[] remoteInputs) {
-        if (gameOver) return;
+        if (gameOver) {
+            System.out.println("GAME OVER!");
+            System.exit(0);
+        }
         player.update(localInputs);
         opponent.update(remoteInputs);
         resolveCollisions();
@@ -48,13 +51,15 @@ public class GameState {
                 opponent.posX += 10f;
             }
         }
-        if (player.attack.isExtended() && aabb(player.left(), player.top(), player.right(), player.bottom(), opponent.left(), opponent.top(), opponent.right(), opponent.bottom())) {
+        if (player.attack.isExtended() && aabb(player.attackLeft(), player.attackTop(), player.attackRight(), player.attackBottom(), opponent.left(), opponent.top(), opponent.right(), opponent.bottom())) {
             gameOver = true;
         }
-        if (opponent.attack.isExtended() && aabb(player.left(), player.top(), player.right(), player.bottom(), opponent.left(), opponent.top(), opponent.right(), opponent.bottom())) {
+
+        if (opponent.attack.isExtended() && aabb(opponent.attackLeft(), opponent.attackTop(), opponent.attackRight(), opponent.attackBottom(), player.left(), player.top(), player.right(), player.bottom())) {
             gameOver = true;
         }
-        if (player.attack.isExtended() && opponent.attack.isExtended() && aabb(player.left(), player.top(), player.right(), player.bottom(), opponent.left(), opponent.top(), opponent.right(), opponent.bottom())) {
+
+        if (player.attack.isExtended() && opponent.attack.isExtended() && aabb(player.attackLeft(), player.attackTop(), player.attackRight(), player.attackBottom(), opponent.attackLeft(), opponent.attackTop(), opponent.attackRight(), opponent.attackBottom())) {
             gameOver = true;
         }
     }

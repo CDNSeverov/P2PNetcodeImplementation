@@ -7,7 +7,7 @@ public class GUI extends JPanel {
     private volatile GameState state;
 
     public GUI() {
-        setPreferredSize(new Dimension(1280,720));
+        setPreferredSize(new Dimension(1280,500));
         setBackground(Color.BLACK);
     }
 
