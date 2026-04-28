@@ -33,8 +33,7 @@ public class GameState {
 
     public void update(int[] localInputs, int[] remoteInputs) {
         if (gameOver) {
-            System.out.println("GAME OVER!");
-            System.exit(0);
+            return;
         }
         player.update(localInputs);
         opponent.update(remoteInputs);
