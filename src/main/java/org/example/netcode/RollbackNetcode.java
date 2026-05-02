@@ -59,7 +59,7 @@ public class RollbackNetcode implements Netcode{
 
         // Predict remote input for the frame (repeat last known)
         int[] remote = confirmedRemote.getOrDefault(frame, lastRemote.clone());
-        remote = reverseRemoteInputs(remote);
+        //remote = reverseRemoteInputs(remote);
         predictedRemote.put(frame, remote.clone());
 
         // Advance one frame

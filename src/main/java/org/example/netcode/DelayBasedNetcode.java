@@ -11,7 +11,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class DelayBasedNetcode implements Netcode{
-    public static final int DELAY = 30;
+    public static final int DELAY = 0;
 
     private final GameState state;
     private final PeerConnection peer;

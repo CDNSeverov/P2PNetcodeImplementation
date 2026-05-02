@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c1b25e2c-1877-4290-8891-7cb2e02bb56c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/GameState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/GameState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/netcode/DelayBasedNetcode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/netcode/DelayBasedNetcode.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/netcode/RollbackNetcode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/netcode/RollbackNetcode.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -74,7 +74,7 @@
     <configuration name="MainSecondR" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="org.example.Main" />
       <module name="NetcodeProject" />
-      <option name="PROGRAM_PARAMETERS" value="192.168.100.9 7777 rollback" />
+      <option name="PROGRAM_PARAMETERS" value="192.168.0.34 7777 rollback" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -109,7 +109,9 @@
       <workItem from="1777276320587" duration="4030000" />
       <workItem from="1777288546636" duration="144000" />
       <workItem from="1777361715764" duration="2989000" />
-      <workItem from="1777371439603" duration="2385000" />
+      <workItem from="1777371439603" duration="2644000" />
+      <workItem from="1777394799836" duration="670000" />
+      <workItem from="1777740786049" duration="617000" />
     </task>
     <servers />
   </component>
