@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="c1b25e2c-1877-4290-8891-7cb2e02bb56c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/GUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/GUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/netcode/DelayBasedNetcode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/netcode/DelayBasedNetcode.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/netcode/RollbackNetcode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/netcode/RollbackNetcode.java" afterDir="false" />
     </list>
@@ -55,7 +57,7 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Application.MainSecondR">
+  <component name="RunManager" selected="Application.MainSecond">
     <configuration name="MainFirst" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="org.example.Main" />
       <module name="NetcodeProject" />
@@ -66,7 +68,7 @@
     <configuration name="MainSecond" type="Application" factoryName="Application" singleton="false">
       <option name="MAIN_CLASS_NAME" value="org.example.Main" />
       <module name="NetcodeProject" />
-      <option name="PROGRAM_PARAMETERS" value="192.168.100.9 7777 delay" />
+      <option name="PROGRAM_PARAMETERS" value="192.168.0.34 7777 delay" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -111,7 +113,7 @@
       <workItem from="1777361715764" duration="2989000" />
       <workItem from="1777371439603" duration="2644000" />
       <workItem from="1777394799836" duration="670000" />
-      <workItem from="1777740786049" duration="617000" />
+      <workItem from="1777740786049" duration="1771000" />
     </task>
     <servers />
   </component>

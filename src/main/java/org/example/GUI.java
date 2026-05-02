@@ -5,8 +5,10 @@ import java.awt.*;
 
 public class GUI extends JPanel {
     private volatile GameState state;
+    private final boolean mirror; // true for player 2
 
-    public GUI() {
+    public GUI(boolean mirror) {
+        this.mirror = mirror;
         setPreferredSize(new Dimension(1280,500));
         setBackground(Color.BLACK);
     }
@@ -24,8 +26,14 @@ public class GUI extends JPanel {
             return;
         }
 
-        drawPlayer(g, snapshot.player, Color.WHITE);
-        drawPlayer(g, snapshot.opponent, Color.RED);
+        if (mirror) {
+            drawPlayer(g, snapshot.opponent, Color.WHITE);
+            drawPlayer(g, snapshot.player, Color.RED);
+        } else {
+            drawPlayer(g, snapshot.player, Color.WHITE);
+            drawPlayer(g, snapshot.opponent, Color.RED);
+        }
+
 
         if (snapshot.gameOver) {
             g.setColor(Color.YELLOW);
@@ -39,6 +47,8 @@ public class GUI extends JPanel {
             return;
         }
 
+        float drawX = mirror ? mirrorX(p.posX) : p.posX;
+
         g.setColor(color);
         // Body with origin as center
         int bx = (int)(p.posX - Player.WIDTH / 2f);
@@ -50,5 +60,9 @@ public class GUI extends JPanel {
         int ax = (int) p.attack.posX;
         int ay = (int)(p.attack.posY - Player.ATTACK_H / 2f);
         g.fillRect(ax, ay, (int)Player.ATTACK_W, (int)Player.ATTACK_H);
+    }
+
+    private float mirrorX(float x) {
+        return 1280f - x;
     }
 }

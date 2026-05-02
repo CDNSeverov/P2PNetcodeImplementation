@@ -18,7 +18,7 @@ public class Main {
         PeerConnection peer = isServer ? Server.listen(port) : Client.connect(host, port);
 
         // UI
-        GUI gui = new GUI();
+        GUI gui = new GUI(!isServer);
         InputHandler input = new InputHandler();
 
         JFrame frame = new JFrame("Game");
