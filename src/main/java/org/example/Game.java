@@ -13,6 +13,7 @@ public class Game {
 
     public Game(PeerConnection peer, boolean netcodeType, InputHandler input, GUI gui) {
         this.netcode = netcodeType ? new RollbackNetcode(peer) : new DelayBasedNetcode(peer);
+        System.out.println(this.netcode);
         this.input = input;
         this.gui = gui;
     }

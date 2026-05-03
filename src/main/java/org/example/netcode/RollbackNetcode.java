@@ -42,6 +42,7 @@ public class RollbackNetcode implements Netcode{
         // Receive any remote inputs that arrived
         Message msg;
         while ((msg = peer.poll()) != null) {
+            msg.inputs = reverseRemoteInputs(msg.inputs);
             confirmedRemote.put(msg.frame, msg.inputs);
             if (msg.frame > confirmedFrame) {
                 confirmedFrame = msg.frame;
@@ -117,6 +118,22 @@ public class RollbackNetcode implements Netcode{
         while (localHistory.size() > idx) {
             localHistory.pollLast();
         }
+    }
+
+    public int[] reverseRemoteInputs(int[] remote) {
+
+        if (remote[0] == 0 && remote[1] == 1) {
+            remote[0] = 1;
+            remote[1] = 0;
+        } else if (remote[0] == 1 && remote[1] == 0) {
+            remote[0] = 0;
+            remote[1] = 1;
+        } else {
+            remote[0] = 1;
+            remote[1] = 1;
+        }
+
+        return remote;
     }
 
     @Override

@@ -47,13 +47,15 @@ public class GUI extends JPanel {
             return;
         }
 
-        float drawX = mirror ? mirrorX(p.posX) : p.posX;
+        //float drawX = mirror ? mirrorX(p.posX) : p.posX;
 
         g.setColor(color);
         // Body with origin as center
         int bx = (int)(p.posX - Player.WIDTH / 2f);
         int by = (int)(p.posY - Player.HEIGHT / 2f);
         g.fillRect(bx, by, (int)Player.WIDTH, (int)Player.HEIGHT);
+
+        //float attackDrawX = mirror ? mirrorX(p.attack.posX + Player.ATTACK_W) : p.attack.posX;
 
         // Attack
         g.setColor(color.darker());

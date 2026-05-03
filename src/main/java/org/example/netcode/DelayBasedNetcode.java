@@ -11,7 +11,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class DelayBasedNetcode implements Netcode{
-    public static final int DELAY = 10;
+    public static final int DELAY = 40;
 
     private final GameState state;
     private final PeerConnection peer;
@@ -39,9 +39,25 @@ public class DelayBasedNetcode implements Netcode{
         }
 
         int[] local = localBuffer.pollFirst();
-        int[] remote = remoteBuffer.pollFirst(); // this needs the movement to be reversed
+        int[] remote = reverseRemoteInputs(remoteBuffer.pollFirst()); // this needs the movement to be reversed
         state.update(local, remote);
         return true;
+    }
+
+    public int[] reverseRemoteInputs(int[] remote) {
+
+        if (remote[0] == 0 && remote[1] == 1) {
+            remote[0] = 1;
+            remote[1] = 0;
+        } else if (remote[0] == 1 && remote[1] == 0) {
+            remote[0] = 0;
+            remote[1] = 1;
+        } else {
+            remote[0] = 1;
+            remote[1] = 1;
+        }
+
+        return remote;
     }
 
     @Override
