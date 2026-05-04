@@ -42,6 +42,7 @@ public class RollbackNetcode implements Netcode{
         // Receive any remote inputs that arrived
         Message msg;
         while ((msg = peer.poll()) != null) {
+            //System.out.println("Received msg for frame " + msg.frame + " current frame=" + frame);
             msg.inputs = reverseRemoteInputs(msg.inputs);
             confirmedRemote.put(msg.frame, msg.inputs);
             if (msg.frame > confirmedFrame) {
@@ -85,6 +86,9 @@ public class RollbackNetcode implements Netcode{
                 // Update prediciton so we don't rollback this frame again
                 predictedRemote.put(f, confirmed.clone());
             }
+        }
+        if (earliest >= 0) {
+            System.out.println("Rollback triggered on frame " + currentFrame + " back to " + earliest);
         }
         return earliest;
     }

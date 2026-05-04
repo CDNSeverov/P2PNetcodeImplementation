@@ -21,7 +21,7 @@ public class Main {
         GUI gui = new GUI(!isServer);
         InputHandler input = new InputHandler();
 
-        JFrame frame = new JFrame("Game");
+        JFrame frame = new JFrame(host);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(gui);
         frame.pack();
@@ -30,6 +30,12 @@ public class Main {
 
         // Run
         System.out.println("Using " + (netcodeType ? "rollback" : "delay-based") + " netcode");
+
+        System.out.println("Waiting for ready confirmation");
+        peer.sendReady();
+        peer.waitForReady();
+        System.out.println("Starting");
+
         new Game(peer, netcodeType, input, gui).run();
     }
 }
