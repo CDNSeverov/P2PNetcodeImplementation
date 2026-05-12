@@ -26,7 +26,7 @@ public class DelayBasedNetcode implements Netcode{
     @Override
     public boolean tick(int[] localInputs) {
         localBuffer.addLast(localInputs); // 1. Enqueue this frame's local inputs (will be used after a delay)
-        peer.send(new Message(state.frame + DELAY, localInputs)); // 2. Send inputs to peer immediately
+        peer.send(new Message(state.frame + DELAY, localInputs, state.player.posX)); // 2. Send inputs to peer immediately
 
         Message msg; // 3. Drain any messages that arrived from the peer
         while((msg = peer.poll()) != null) {

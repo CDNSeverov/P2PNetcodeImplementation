@@ -32,7 +32,7 @@ public class PeerConnection {
                         continue;
                     }
 
-                    inbox.add(new Message(frame, new int[]{left, right, attack}));
+                    inbox.add(new Message(frame, new int[]{left, right, attack}, 0f));
                 }
             } catch (Exception e) {
                 System.out.println("Connection closed: " + e.getMessage());
