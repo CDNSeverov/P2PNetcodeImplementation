@@ -1,16 +1,13 @@
 package org.example.network;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.Socket;
 
 public class Client {
     public static PeerConnection connect(String host, int port) throws IOException {
         System.out.println("Connecting to " + host + ":" + port + "...");
-
-        InetAddress address = InetAddress.getByName(host);
-        DatagramSocket socket = new DatagramSocket(); // OS assigns local port
-
-        System.out.println("Connected (UDP)!");
-        return new PeerConnection(socket, address, port);
+        Socket socket = new Socket(host, port);
+        System.out.println("Connected!");
+        return new PeerConnection(socket);
     }
 }
