@@ -1,19 +1,20 @@
 package org.example.network;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 
 public class Server {
     public static PeerConnection listen(int port) throws IOException {
         InetAddress localhost = InetAddress.getLocalHost();
-        System.out.println("System IP Address : " + (localhost.getHostAddress()).trim());
+        System.out.println("System IP Address: " + localhost.getHostAddress().trim());
         System.out.println("Waiting for opponent on port " + port + "...");
-        ServerSocket serverSocket = new ServerSocket(port);
-        Socket socket = serverSocket.accept(); // waits for a connection to other peer
-        serverSocket.close(); // closes after connecting to other peer
-        System.out.println("Opponent connected: " + socket.getInetAddress());
-        return new PeerConnection(socket);
+
+        DatagramSocket socket = new DatagramSocket(port);
+
+        // Don't set peerAddress yet — we learn it from the first incoming packet
+        PeerConnection conn = new PeerConnection(socket);
+
+        System.out.println("Listening for first UDP packet...");
+        return conn;
     }
 }

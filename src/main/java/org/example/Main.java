@@ -31,6 +31,12 @@ public class Main {
         // Run
         System.out.println("Using " + (netcodeType ? "rollback" : "delay-based") + " netcode");
 
+        if (isServer) {
+            System.out.println("Waiting for client to send first packet...");
+            peer.waitForPeer(); // blocks until first UDP packet arrives
+            System.out.println("Client found: ");
+        }
+
         System.out.println("Waiting for ready confirmation");
         peer.sendReady();
         peer.waitForReady();
