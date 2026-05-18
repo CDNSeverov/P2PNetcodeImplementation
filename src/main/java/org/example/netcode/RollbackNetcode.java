@@ -15,15 +15,15 @@ public class RollbackNetcode implements Netcode{
     private GameState current;
     private final PeerConnection peer;
     private static final int MAX_ROLLBACK = 60;
-    private Deque<GameState> snapshots = new ArrayDeque<>(); // oldest -> ... -> newest
+    private final Deque<GameState> snapshots = new ArrayDeque<>(); // oldest -> ... -> newest
     private final Map<Integer, int[]> predictedRemote = new HashMap<>();
     private final Map<Integer, int[]> confirmedRemote = new HashMap<>();
     private final Map<Integer, Float> confirmedPosX = new HashMap<>();
     private int[] lastRemote = {0, 0, 0};
-    private Deque<int[]> localHistory = new ArrayDeque<>(); // localHistory[i] = inputs used on frame (currentFrame - localHistory.size() + i)
+    private final Deque<int[]> localHistory = new ArrayDeque<>(); // localHistory[i] = inputs used on frame (currentFrame - localHistory.size() + i)
     private int confirmedFrame = -1;
     private static final float SCREEN_WIDTH = 1280f;
-    private static final float POS_TOLERANCE = 0.0001f;
+    private static final float POS_TOLERANCE = 0.001f;
 
     public RollbackNetcode(PeerConnection peer) {
         this.peer = peer;
@@ -38,16 +38,22 @@ public class RollbackNetcode implements Netcode{
         snapshots.addLast(current.copy());
         localHistory.addLast(localInputs.clone());
 
+        trimHistory();
+
+        drainNetwork(frame);
 
         // Check if we need to rollback
         int rollbackTo = findRollbackFrame(frame);
         if (rollbackTo >= 0) {
-//            System.out.println("rollbackTo = " + rollbackTo);
+            System.out.println("rollbackTo = " + rollbackTo);
             doRollback(rollbackTo, frame);
-//            System.out.println("did rollback");
+            System.out.println("did rollback");
         }
 
-        drainNetwork(frame);
+        if (snapshots.size() > MAX_ROLLBACK) {
+            snapshots.pollFirst();
+            localHistory.pollFirst();
+        }
 
         // Predict remote input for the frame (repeat last known)
         int[] remote = confirmedRemote.getOrDefault(frame, lastRemote.clone());
@@ -96,6 +102,17 @@ public class RollbackNetcode implements Netcode{
             if (inputMismatch || positionMismatch) {
                 earliest = (earliest == -1) ? f : Math.min(earliest, f);
             }
+
+//            if (predicted == null || !Arrays.equals(predicted, confirmed)) {
+//                // Check whether our prediction for that frame was wrong
+//                earliest = (earliest == -1) ? f : Math.min(earliest, f);
+//                // Update prediciton so we don't rollback this frame again
+//                predictedRemote.put(f, confirmed.clone());
+//            }
+//        }
+//        if (earliest >= 0) {
+//            System.out.println("Rollback triggered on frame " + currentFrame + " back to " + earliest);
+//        }
         }
         return earliest;
     }
@@ -116,6 +133,7 @@ public class RollbackNetcode implements Netcode{
         return Math.abs(list.get(idx).opponent.posX - reportedPosX) > POS_TOLERANCE;
     }
 
+
     private void doRollback(int targetFrame, int presentFrame) {
         List<GameState> snapshotList = new ArrayList<>(snapshots);
         List<int[]> localList = new ArrayList<>(localHistory);
@@ -130,15 +148,28 @@ public class RollbackNetcode implements Netcode{
         current = snapshotList.get(idx).copy();
 
         for (int f = targetFrame; f < presentFrame; f++) {
-
             int localIdx = f - baseFrame;
             int[] loc = (localIdx >= 0 && localIdx < localList.size()) ? localList.get(localIdx) : new int[]{0,0,0};
             int[] rem = confirmedRemote.getOrDefault(f, lastRemote.clone());
             current.update(loc, rem);
+
+//            Float peerPosX = confirmedPosX.get(f);
+//            if (peerPosX != null && current.opponent.posX != peerPosX) {
+//                current.opponent.posX = peerPosX;
+//            }
         }
 
-        snapshots = new ArrayDeque<>(snapshotList.subList(0, idx));
-        localHistory = new ArrayDeque<>(localList.subList(0, idx));
+        while (snapshots.size() > idx) {
+            snapshots.pollLast();
+        }
+        while (localHistory.size() > idx) {
+            localHistory.pollLast();
+        }
+    }
+
+    private void trimHistory() {
+        while (snapshots.size()   > MAX_ROLLBACK) snapshots.pollFirst();
+        while (localHistory.size() > MAX_ROLLBACK) localHistory.pollFirst();
     }
 
     private void pruneOldFrames(int currentFrame) {

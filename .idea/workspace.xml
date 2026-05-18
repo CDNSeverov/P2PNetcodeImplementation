@@ -6,11 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="c1b25e2c-1877-4290-8891-7cb2e02bb56c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Message.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Message.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/netcode/DelayBasedNetcode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/netcode/DelayBasedNetcode.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/netcode/RollbackNetcode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/netcode/RollbackNetcode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/network/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/network/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/network/PeerConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/network/PeerConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/network/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/network/Server.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,7 +88,7 @@
     <configuration name="MainSecondR" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="org.example.Main" />
       <module name="NetcodeProject" />
-      <option name="PROGRAM_PARAMETERS" value="192.168.0.34 7777 rollback" />
+      <option name="PROGRAM_PARAMETERS" value="192.168.0.33 7777 rollback" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -137,7 +136,6 @@
       <workItem from="1777971698705" duration="1298000" />
       <workItem from="1778579963236" duration="3828000" />
       <workItem from="1778583871848" duration="378000" />
-      <workItem from="1779122849681" duration="3564000" />
     </task>
     <servers />
   </component>

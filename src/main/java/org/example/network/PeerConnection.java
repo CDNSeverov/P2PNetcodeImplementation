@@ -1,56 +1,31 @@
 package org.example.network;
 
 import org.example.Message;
-import java.io.IOException;
-import java.net.*;
-import java.nio.ByteBuffer;
+
+import java.io.*;
+import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 
 public class PeerConnection {
-    private static final int PACKET_SIZE = 16; // 4 ints * 4 bytes
-    private final CountDownLatch addressLatch = new CountDownLatch(1);
-
-    private final DatagramSocket socket;
-    private volatile InetAddress peerAddress;
-    private volatile int peerPort;
+    private final Socket socket;
+    private final DataOutputStream out;
     private final ConcurrentLinkedQueue<Message> inbox = new ConcurrentLinkedQueue<>();
     private final CountDownLatch readyLatch = new CountDownLatch(1);
 
-    // Server-side constructor: we know our port, peer address comes from first packet
-    public PeerConnection(DatagramSocket socket) {
+    public PeerConnection(Socket socket) throws IOException {
         this.socket = socket;
-        startReader();
-    }
+        this.out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 
-    // Client-side constructor: we know exactly who we're talking to
-    public PeerConnection(DatagramSocket socket, InetAddress peerAddress, int peerPort) {
-        this.socket = socket;
-        this.peerAddress = peerAddress;
-        this.peerPort = peerPort;
-        startReader();
-    }
-
-    private void startReader() {
         Thread reader = new Thread(() -> {
-            byte[] buf = new byte[PACKET_SIZE];
-            DatagramPacket packet = new DatagramPacket(buf, PACKET_SIZE);
+            DataInputStream in = null;
             try {
-                while (!socket.isClosed()) {
-                    socket.receive(packet);
-
-                    // First packet from peer tells us their address (server side)
-                    if (peerAddress == null) {
-                        peerAddress = packet.getAddress();
-                        peerPort = packet.getPort();
-                        addressLatch.countDown(); // now safe to send
-                    }
-
-                    ByteBuffer bb = ByteBuffer.wrap(packet.getData(), 0, PACKET_SIZE);
-                    int frame  = bb.getInt();
-                    int left   = bb.getInt();
-                    int right  = bb.getInt();
-                    int attack = bb.getInt();
+                in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+                while(!socket.isClosed()) {
+                    int frame = in.readInt();
+                    int left = in.readInt();
+                    int right = in.readInt();
+                    int attack = in.readInt();
 
                     if (frame == Integer.MIN_VALUE) {
                         readyLatch.countDown();
@@ -60,10 +35,9 @@ public class PeerConnection {
                     inbox.add(new Message(frame, new int[]{left, right, attack}, 0f));
                 }
             } catch (Exception e) {
-                if (!socket.isClosed()) {
-                    System.out.println("Connection error: " + e.getMessage());
-                }
+                System.out.println("Connection closed: " + e.getMessage());
             }
+
         });
         reader.setDaemon(true);
         reader.start();
@@ -71,15 +45,11 @@ public class PeerConnection {
 
     public void send(Message msg) {
         try {
-            ByteBuffer bb = ByteBuffer.allocate(PACKET_SIZE);
-            bb.putInt(msg.frame);
-            bb.putInt(msg.inputs[0]);
-            bb.putInt(msg.inputs[1]);
-            bb.putInt(msg.inputs[2]);
-
-            byte[] data = bb.array();
-            DatagramPacket packet = new DatagramPacket(data, data.length, peerAddress, peerPort);
-            socket.send(packet);
+            out.writeInt(msg.frame);
+            out.writeInt(msg.inputs[0]);
+            out.writeInt(msg.inputs[1]);
+            out.writeInt(msg.inputs[2]);
+            out.flush();
         } catch (IOException e) {
             System.out.println("Send error: " + e.getMessage());
         }
@@ -89,26 +59,19 @@ public class PeerConnection {
         return inbox.poll();
     }
 
-    public void close() {
+    public void close() throws IOException {
         socket.close();
     }
 
     public void sendReady() throws IOException {
-        ByteBuffer bb = ByteBuffer.allocate(PACKET_SIZE);
-        bb.putInt(Integer.MIN_VALUE);
-        bb.putInt(0);
-        bb.putInt(0);
-        bb.putInt(0);
-
-        byte[] data = bb.array();
-        DatagramPacket packet = new DatagramPacket(data, data.length, peerAddress, peerPort);
-        socket.send(packet);
+        out.writeInt(Integer.MIN_VALUE);
+        out.writeInt(0);
+        out.writeInt(0);
+        out.writeInt(0);
+        out.flush();
     }
 
     public void waitForReady() throws InterruptedException {
         readyLatch.await();
-    }
-    public void waitForPeer() throws InterruptedException {
-        addressLatch.await();
     }
 }
