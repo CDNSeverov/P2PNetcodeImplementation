@@ -14,7 +14,7 @@ import java.util.*;
 public class RollbackNetcode implements Netcode{
     private GameState current;
     private final PeerConnection peer;
-    private static final int MAX_ROLLBACK = 60;
+    private static final int MAX_ROLLBACK = 120;
     private final Deque<GameState> snapshots = new ArrayDeque<>(); // oldest -> ... -> newest
     private final Map<Integer, int[]> predictedRemote = new HashMap<>();
     private final Map<Integer, int[]> confirmedRemote = new HashMap<>();
@@ -23,7 +23,7 @@ public class RollbackNetcode implements Netcode{
     private final Deque<int[]> localHistory = new ArrayDeque<>(); // localHistory[i] = inputs used on frame (currentFrame - localHistory.size() + i)
     private int confirmedFrame = -1;
     private static final float SCREEN_WIDTH = 1280f;
-    private static final float POS_TOLERANCE = 0.001f;
+    private static final float POS_TOLERANCE = 0f;
 
     public RollbackNetcode(PeerConnection peer) {
         this.peer = peer;
@@ -34,26 +34,29 @@ public class RollbackNetcode implements Netcode{
     public boolean tick(int[] localInputs) {
         int frame = current.frame;
 
+        drainNetwork(frame);
+
         // Save snapshot before simulating the frame
         snapshots.addLast(current.copy());
         localHistory.addLast(localInputs.clone());
 
-        trimHistory();
+//        trimHistory();
 
-        drainNetwork(frame);
 
         // Check if we need to rollback
         int rollbackTo = findRollbackFrame(frame);
-        if (rollbackTo >= 0) {
-            System.out.println("rollbackTo = " + rollbackTo);
+        if (rollbackTo > 0) {
+//            System.out.println("rollbackTo: " + rollbackTo);
+//            System.out.println("current frame: " + frame);
             doRollback(rollbackTo, frame);
-            System.out.println("did rollback");
         }
 
-        if (snapshots.size() > MAX_ROLLBACK) {
-            snapshots.pollFirst();
-            localHistory.pollFirst();
-        }
+        trimHistory();
+
+//        if (snapshots.size() > MAX_ROLLBACK) {
+//            snapshots.pollFirst();
+//            localHistory.pollFirst();
+//        }
 
         // Predict remote input for the frame (repeat last known)
         int[] remote = confirmedRemote.getOrDefault(frame, lastRemote.clone());
@@ -95,12 +98,14 @@ public class RollbackNetcode implements Netcode{
 
             int[] confirmed = entry.getValue();
             int[] predicted = predictedRemote.get(f);
+            System.out.println(Arrays.equals(predicted, confirmed));
 
             boolean inputMismatch = (predicted == null || !Arrays.equals(predicted, confirmed));
-            boolean positionMismatch = hasPositionMismatch(f);
+//            boolean positionMismatch = hasPositionMismatch(f);
 
-            if (inputMismatch || positionMismatch) {
+            if (inputMismatch) {
                 earliest = (earliest == -1) ? f : Math.min(earliest, f);
+                System.out.println("Earliest: " + earliest);
             }
 
 //            if (predicted == null || !Arrays.equals(predicted, confirmed)) {
@@ -124,7 +129,7 @@ public class RollbackNetcode implements Netcode{
         }
 
         List<GameState> list = new ArrayList<>(snapshots);
-        int baseFrame = current.frame - list.size();
+        int baseFrame = current.frame - list.size() + 1;
         int idx = f - baseFrame;
         if (idx < 0 || idx >= list.size()) {
             return false;
@@ -138,8 +143,13 @@ public class RollbackNetcode implements Netcode{
         List<GameState> snapshotList = new ArrayList<>(snapshots);
         List<int[]> localList = new ArrayList<>(localHistory);
 
-        int baseFrame = presentFrame - snapshotList.size();
+        int baseFrame = presentFrame - snapshotList.size() + 1;
         int idx = targetFrame - baseFrame;
+
+//        System.out.println("presentFrame: " + presentFrame);
+//        System.out.println("idx: " + idx);
+//        System.out.println("targetFrame: " + targetFrame);
+//        System.out.println("baseFrame: " + baseFrame);
 
         if (idx < 0 || idx >= snapshotList.size()) {
             return;
@@ -159,12 +169,17 @@ public class RollbackNetcode implements Netcode{
 //            }
         }
 
-        while (snapshots.size() > idx) {
-            snapshots.pollLast();
-        }
-        while (localHistory.size() > idx) {
-            localHistory.pollLast();
-        }
+//        snapshots = new ArrayDeque<>(snapshotList.subList(0, idx));
+//        localHistory = new ArrayDeque<>(localList.subList(0, idx));
+
+//        trimHistory();
+
+//        while (snapshots.size() > idx) {
+//            snapshots.pollLast();
+//        }
+//        while (localHistory.size() > idx) {
+//            localHistory.pollLast();
+//        }
     }
 
     private void trimHistory() {
