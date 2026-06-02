@@ -12,10 +12,21 @@ public class PeerConnection {
     private final DataOutputStream out;
     private final ConcurrentLinkedQueue<Message> inbox = new ConcurrentLinkedQueue<>();
     private final CountDownLatch readyLatch = new CountDownLatch(1);
+    private final PrintWriter logWriter;
+    private final String playerId;
 
-    public PeerConnection(Socket socket) throws IOException {
+    public PeerConnection(Socket socket, String playerId, String logFilePath) throws IOException {
         this.socket = socket;
         this.out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+        this.playerId = playerId;
+
+        boolean fileExists = new File(logFilePath).exists();
+        this.logWriter = new PrintWriter(new FileWriter(logFilePath, true));
+
+        if (!fileExists) {
+            logWriter.println("timestamp,playerId,event,frame,left,right,attack");
+            logWriter.flush();
+        }
 
         Thread reader = new Thread(() -> {
             DataInputStream in = null;
@@ -32,6 +43,13 @@ public class PeerConnection {
                         continue;
                     }
 
+                    // Log reception of a game message
+                    long receiveTime = System.currentTimeMillis();
+                    synchronized (logWriter) {
+                        logWriter.printf("%d,%s,recv,%d,%d,%d,%d%n", receiveTime, playerId, frame, left, right, attack);
+                        logWriter.flush();
+                    }
+
                     inbox.add(new Message(frame, new int[]{left, right, attack}));
                 }
             } catch (Exception e) {
@@ -45,11 +63,19 @@ public class PeerConnection {
 
     public void send(Message msg) {
         try {
+            long sendTime = System.currentTimeMillis();
+
             out.writeInt(msg.frame);
             out.writeInt(msg.inputs[0]);
             out.writeInt(msg.inputs[1]);
             out.writeInt(msg.inputs[2]);
             out.flush();
+
+            // Log the send event
+            synchronized (logWriter) {
+                logWriter.printf("%d,%s,send,%d,%d,%d,%d%n", sendTime, playerId, msg.frame, msg.inputs[0], msg.inputs[1], msg.inputs[2]);
+                logWriter.flush();
+            }
         } catch (IOException e) {
             System.out.println("Send error: " + e.getMessage());
         }

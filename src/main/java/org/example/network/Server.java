@@ -14,6 +14,6 @@ public class Server {
         Socket socket = serverSocket.accept(); // waits for a connection to other peer
         serverSocket.close(); // closes after connecting to other peer
         System.out.println("Opponent connected: " + socket.getInetAddress());
-        return new PeerConnection(socket);
+        return new PeerConnection(socket,"server", "LatencyLogs/LatencyLogs.csv");
     }
 }

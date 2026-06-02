@@ -8,6 +8,6 @@ public class Client {
         System.out.println("Connecting to " + host + ":" + port + "...");
         Socket socket = new Socket(host, port);
         System.out.println("Connected!");
-        return new PeerConnection(socket);
+        return new PeerConnection(socket, "client", "LatencyLogs/LatencyLogs.csv");
     }
 }
