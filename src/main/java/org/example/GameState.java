@@ -5,6 +5,8 @@ public class GameState {
     public Player opponent;
     public boolean gameOver;
     public int frame;
+    private int pendingGameOverFrames = 0;
+    private static final int GAME_OVER_CONFIRM_FRAMES = 3;
 
     public static GameState createInitial() {
         GameState gs = new GameState();
@@ -16,13 +18,6 @@ public class GameState {
     }
 
     private GameState() {}
-
-//    public GameState() {
-//        this.player = player;
-//        this.opponent = opponent;
-//        gameOver = false;
-//        frame = 0;
-//    }
 
     private GameState(Player player, Player opponent, boolean gameOver, int frame) {
         this.player = player;
@@ -39,6 +34,13 @@ public class GameState {
         opponent.update(remoteInputs);
         resolveCollisions();
         frame++;
+
+        if (pendingGameOverFrames > 0) {
+            pendingGameOverFrames--;
+            if (pendingGameOverFrames == 0) {
+                gameOver = true;
+            }
+        }
     }
 
     private void resolveCollisions() {
@@ -50,17 +52,31 @@ public class GameState {
                 opponent.posX += 10f;
             }
         }
+
+        boolean shouldEnd = checkGameOverCondition();
+        if (shouldEnd) {
+            if (pendingGameOverFrames == 0) {
+                pendingGameOverFrames = GAME_OVER_CONFIRM_FRAMES;
+            }
+        } else {
+            pendingGameOverFrames = 0;
+        }
+    }
+
+    private boolean checkGameOverCondition() {
         if (player.attack.isExtended() && aabb(player.attackLeft(), player.attackTop(), player.attackRight(), player.attackBottom(), opponent.left(), opponent.top(), opponent.right(), opponent.bottom())) {
-            gameOver = true;
+            return true;
         }
 
         if (opponent.attack.isExtended() && aabb(opponent.attackLeft(), opponent.attackTop(), opponent.attackRight(), opponent.attackBottom(), player.left(), player.top(), player.right(), player.bottom())) {
-            gameOver = true;
+            return true;
         }
 
         if (player.attack.isExtended() && opponent.attack.isExtended() && aabb(player.attackLeft(), player.attackTop(), player.attackRight(), player.attackBottom(), opponent.attackLeft(), opponent.attackTop(), opponent.attackRight(), opponent.attackBottom())) {
-            gameOver = true;
+            return true;
         }
+
+        return false;
     }
 
     private boolean aabb(float al, float at, float ar, float ab, float bl, float bt, float br, float bb) {

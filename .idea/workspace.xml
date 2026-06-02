@@ -6,10 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c1b25e2c-1877-4290-8891-7cb2e02bb56c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Message.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Message.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/netcode/DelayBasedNetcode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/netcode/DelayBasedNetcode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/netcode/RollbackNetcode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/netcode/RollbackNetcode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/network/PeerConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/network/PeerConnection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/GameState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/GameState.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -141,7 +138,9 @@
       <workItem from="1779836696708" duration="208000" />
       <workItem from="1779867575153" duration="647000" />
       <workItem from="1779868309739" duration="967000" />
-      <workItem from="1779967611128" duration="1456000" />
+      <workItem from="1779967611128" duration="2824000" />
+      <workItem from="1779988586586" duration="1732000" />
+      <workItem from="1780390490076" duration="1008000" />
     </task>
     <servers />
   </component>
