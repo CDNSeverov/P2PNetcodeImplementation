@@ -1,25 +1,20 @@
 package org.example.netcode;
 
-// Local inputs are applied immediately,
-// remote inputs are predicted (repeat from last known input)
-// When error occurs in prediction engine rills back to last confirmed snapshot,
-// re-simulates up to current frame using the correct inputs and continues.
-
 import org.example.GameState;
 import org.example.Message;
 import org.example.network.PeerConnection;
 
 import java.util.*;
 
-public class RollbackNetcode implements Netcode{
+public class RollbackNetcode implements Netcode {
     private GameState current;
     private final PeerConnection peer;
     private static final int MAX_ROLLBACK = 120;
-    private final Deque<GameState> snapshots = new ArrayDeque<>(); // oldest -> ... -> newest
+    private final Deque<GameState> snapshots = new ArrayDeque<>();
     private final Map<Integer, int[]> predictedRemote = new HashMap<>();
     private final Map<Integer, int[]> confirmedRemote = new HashMap<>();
     private int[] lastRemote = {0, 0, 0};
-    private final Deque<int[]> localHistory = new ArrayDeque<>(); // localHistory[i] = inputs used on frame (currentFrame - localHistory.size() + i)
+    private final Deque<int[]> localHistory = new ArrayDeque<>();
     private int confirmedFrame = -1;
 
     public RollbackNetcode(PeerConnection peer) {
@@ -33,12 +28,9 @@ public class RollbackNetcode implements Netcode{
 
         drainNetwork(frame);
 
-        // Save snapshot before simulating the frame
         snapshots.addLast(current.copy());
         localHistory.addLast(localInputs.clone());
 
-
-        // Check if we need to rollback
         int rollbackTo = findRollbackFrame(frame);
         if (rollbackTo > 0) {
             doRollback(rollbackTo, frame);
@@ -46,11 +38,9 @@ public class RollbackNetcode implements Netcode{
 
         trimHistory();
 
-        // Predict remote input for the frame (repeat last known)
         int[] remote = confirmedRemote.getOrDefault(frame, lastRemote.clone());
         predictedRemote.put(frame, remote.clone());
 
-        // Advance one frame
         peer.send(new Message(frame, localInputs));
         current.update(localInputs, remote);
 
@@ -63,18 +53,28 @@ public class RollbackNetcode implements Netcode{
         Message msg;
         int latestFrame = -1;
         while ((msg = peer.poll()) != null) {
-            int[] mirroredInputs = reverseRemoteInputs(msg.inputs);
-
-            confirmedRemote.put(msg.frame, mirroredInputs);
+            // Reverse the remote inputs so the opponent moves correctly
+            // on the local screen (local player always on the left)
+            int[] reversed = reverseRemoteInputs(msg.inputs);
+            confirmedRemote.put(msg.frame, reversed);
 
             if (msg.frame > latestFrame) {
                 latestFrame = msg.frame;
-                lastRemote = mirroredInputs.clone();
+                lastRemote = reversed.clone();
             }
         }
         if (latestFrame > confirmedFrame) {
             confirmedFrame = latestFrame;
         }
+    }
+
+    private int[] reverseRemoteInputs(int[] raw) {
+        int[] reversed = raw.clone();
+        // swap left (index 0) and right (index 1)
+        int temp = reversed[0];
+        reversed[0] = reversed[1];
+        reversed[1] = temp;
+        return reversed;
     }
 
     private int findRollbackFrame(int currentFrame) {
@@ -87,13 +87,10 @@ public class RollbackNetcode implements Netcode{
 
             int[] confirmed = entry.getValue();
             int[] predicted = predictedRemote.get(f);
-            System.out.println(Arrays.equals(predicted, confirmed));
-
             boolean inputMismatch = (predicted == null || !Arrays.equals(predicted, confirmed));
 
             if (inputMismatch) {
                 earliest = (earliest == -1) ? f : Math.min(earliest, f);
-                System.out.println("Earliest: " + earliest);
             }
         }
         return earliest;
@@ -114,14 +111,30 @@ public class RollbackNetcode implements Netcode{
 
         for (int f = targetFrame; f < presentFrame; f++) {
             int localIdx = f - baseFrame;
-            int[] loc = (localIdx >= 0 && localIdx < localList.size()) ? localList.get(localIdx) : new int[]{0,0,0};
-            int[] rem = confirmedRemote.getOrDefault(f, lastRemote.clone());
+            int[] loc = (localIdx >= 0 && localIdx < localList.size())
+                    ? localList.get(localIdx)
+                    : new int[]{0, 0, 0};
+
+            // Use confirmed input if available, otherwise fall back to the original prediction
+            int[] rem;
+            if (confirmedRemote.containsKey(f)) {
+                rem = confirmedRemote.get(f);
+            } else {
+                rem = predictedRemote.get(f);
+                if (rem == null) {
+                    rem = lastRemote.clone();
+                }
+            }
+
+            // Store the remote input actually used for this frame in the prediction map
+            predictedRemote.put(f, rem.clone());
+
             current.update(loc, rem);
         }
     }
 
     private void trimHistory() {
-        while (snapshots.size()   > MAX_ROLLBACK) snapshots.pollFirst();
+        while (snapshots.size() > MAX_ROLLBACK) snapshots.pollFirst();
         while (localHistory.size() > MAX_ROLLBACK) localHistory.pollFirst();
     }
 
@@ -129,19 +142,6 @@ public class RollbackNetcode implements Netcode{
         int cutoff = currentFrame - MAX_ROLLBACK - 1;
         confirmedRemote.entrySet().removeIf(e -> e.getKey() < cutoff);
         predictedRemote.entrySet().removeIf(e -> e.getKey() < cutoff);
-    }
-
-    public int[] reverseRemoteInputs(int[] remote) {
-
-        if (remote[0] == 0 && remote[1] == 1) {
-            remote[0] = 1;
-            remote[1] = 0;
-        } else if (remote[0] == 1 && remote[1] == 0) {
-            remote[0] = 0;
-            remote[1] = 1;
-        }
-
-        return remote;
     }
 
     @Override
